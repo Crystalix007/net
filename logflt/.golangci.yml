@@ -19,11 +19,15 @@ formatters:
   enable:
     - gofumpt
     - goimports
+    - golines
   settings:
     gofumpt:
       extra-rules: true
     goimports:
       local-prefixes: logflt
+    golines:
+      max-len: 8
+      tab-len: 2
 
 issues:
   exclude-rules:
