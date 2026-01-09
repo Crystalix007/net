@@ -8,28 +8,48 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/spf13/cobra"
 
 	"github.com/Crystalix007/net/internal/log"
 	"github.com/Crystalix007/net/internal/ui"
 )
 
+var (
+	filterFlags []string
+)
+
 func main() {
-	if len(os.Args) < 2 {
-		// Check if stdin is a pipe
-		stat, _ := os.Stdin.Stat()
-		if (stat.Mode() & os.ModeCharDevice) == 0 {
-			// Stdin is piped
-			run("-")
-		} else {
-			fmt.Println("Usage: net <filename> or pipe data to stdin")
-			os.Exit(1)
-		}
-	} else {
-		run(os.Args[1])
+	rootCmd := &cobra.Command{
+		Use:   "net [filename]",
+		Short: "A log filtering tool",
+		Long:  `net is a tool for filtering and viewing log files interactively.`,
+		Args:  cobra.MaximumNArgs(1),
+		Run:   run,
+	}
+
+	rootCmd.Flags().StringSliceVarP(&filterFlags, "filter", "f", nil, "Initial filters to apply (prepend '!' for inverted)")
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }
 
-func run(path string) {
+func run(cmd *cobra.Command, args []string) {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		// Check if stdin is a pipe
+		stat, _ := os.Stdin.Stat()
+		if (stat.Mode() & os.ModeCharDevice) == 0 {
+			path = "-"
+		} else {
+			_ = cmd.Help()
+			os.Exit(1)
+		}
+	}
+
 	var src log.Source
 	var err error
 
@@ -77,6 +97,20 @@ func run(path string) {
 	defer src.Close() //nolint:errcheck
 
 	model := ui.NewModel(src)
+
+	// Apply CLI filters
+	for _, f := range filterFlags {
+		inverted := false
+		pattern := f
+		if strings.HasPrefix(f, "!") {
+			inverted = true
+			pattern = strings.TrimPrefix(f, "!")
+		}
+		if err := model.Filters.Add(pattern, inverted); err != nil {
+			fmt.Printf("Error adding filter '%s': %v\n", f, err)
+		}
+	}
+
 	p := tea.NewProgram(model, tea.WithAltScreen())
 
 	finalModel, err := p.Run()
