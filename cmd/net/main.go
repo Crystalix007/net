@@ -14,9 +14,7 @@ import (
 	"github.com/Crystalix007/net/internal/ui"
 )
 
-var (
-	filterFlags []string
-)
+var filterFlags []string
 
 func main() {
 	rootCmd := &cobra.Command{
@@ -27,7 +25,13 @@ func main() {
 		Run:   run,
 	}
 
-	rootCmd.Flags().StringSliceVarP(&filterFlags, "filter", "f", nil, "Initial filters to apply (prepend '!' for inverted)")
+	rootCmd.Flags().StringSliceVarP(
+		&filterFlags,
+		"filter",
+		"f",
+		nil,
+		"Initial filters to apply (prepend '!' for inverted)",
+	)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
