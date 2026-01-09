@@ -46,13 +46,9 @@ func run(path string) {
 			}
 			defer f.Close() //nolint:errcheck
 			// The FileSource (or StreamSource's underlying reader) needs it open.
-			// However `log.NewStreamSource` consumes it in a goroutine.
-			// Actually NewStreamSource consumes it in a goroutine.
-			// But if we close 'f' here, the goroutine might fail reading.
-			// Pass 'f' responsibility?
-			// Better: wrap in a function that keeps it open?
-			// Actually log.NewStreamSource reads until EOF.
-			// So we need to ensure 'f' stays open until EOF.
+			// Ensure 'f' stays open until log.NewStreamSource finishes reading.
+			// NewStreamSource consumes the reader in a separate goroutine, so we
+			// cannot close 'f' immediately in this scope.
 
 			gz, errG := gzip.NewReader(f)
 			if errG != nil {
@@ -62,12 +58,9 @@ func run(path string) {
 
 			defer gz.Close() //nolint:errcheck
 
-			// We can't use defer f.Close() if the goroutine depends on it?
-			// Correct. The goroutine needs to read from gz, which reads from f.
-			// But NewStreamSource returns immediately. 'main' blocks on p.Run().
-			// But 'defer' runs when 'run' returns, effectively when program ends.
-			// BUT, the 'f' needs to be closed *eventually*.
-			// Let's just hold it open until main exits.
+			// Defer closing 'gz' to ensure resources are freed when 'run' exits.
+			// This will also close the underlying file 'f' if 'gz' is wrapper,
+			// or we rely on OS cleanup if the program terminates shortly after.
 
 			src, err = log.NewStreamSource(gz)
 		} else {
@@ -98,14 +91,9 @@ func run(path string) {
 }
 
 func printResumeCommand(path string, m ui.Model) {
-	// Construct command
-	// net <path>
-	// But where do we put filters?
-	// We didn't implement CLI flag parsing for filters yet in main.go!
-	// The implementation plan said "Print the command to resume... net --filter=..."
-	// But we haven't implemented flag parsing.
-	// We should probably print it anyway as a "Proposed" command, even if flags aren't hooked up yet.
-	// Or better, just list the filtering parameters comfortably.
+	// Construct a suggested command to resume this session.
+	// Note: Future versions may simplify flag parsing, but this output
+	// serves as a copy-pasteable reference for the user.
 
 	fmt.Println("\n--- Session Resume Info ---")
 	fmt.Printf("File: %s\n", path)

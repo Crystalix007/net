@@ -27,9 +27,7 @@ func NewEngine() *Engine {
 
 // Add compiles and adds a new filter pattern.
 func (e *Engine) Add(pattern string, inverted bool) error {
-	// Use simpler regex syntax if preferred, but Go regexp is standard.
-	// Case insensitive by default? '(?i)' prefix can be added if requested.
-	// For now, standard compilation.
+	// Compile the regex pattern. Standard Go regexp syntax is supported.
 	re, err := regexp.Compile(pattern)
 	if err != nil {
 		return err
@@ -48,9 +46,6 @@ func (e *Engine) Add(pattern string, inverted bool) error {
 // Logic:
 // - Must match ALL enabled non-inverted filters (AND).
 // - Must NOT match ANY enabled inverted filters (NOT).
-// OR logic?
-// Usually:
-// Keep if (Match F1) AND (Match F2) AND (NOT Match F3) ...
 func (e *Engine) Match(line []byte) bool {
 	if len(e.Filters) == 0 {
 		return true

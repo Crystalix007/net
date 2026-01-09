@@ -35,11 +35,7 @@ func NewStreamSource(r io.Reader) (*StreamSource, error) {
 func (s *StreamSource) consume(r io.Reader) {
 	defer close(s.done)
 	// We append to the temp file.
-	// Since we might be reading/writing concurrently, strictly speaking we might need coordination,
-	// but writes to file are generally safe. However, to know the size, we need to track it.
-	// We'll update s.written atomically or use a mutex if needed, but for now simple atomic store is best.
-	// Actually, ReaderAt on the file checks the filesystem size. So we just need to ensure we flush/sync?
-	// os.File ReadAt/Write is thread-safe on POSIX.
+	// We rely on the filesystem's atomicity and metadata for tracking size.
 	buf := make([]byte, 32*1024)
 	for {
 		n, err := r.Read(buf)

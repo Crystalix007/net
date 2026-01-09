@@ -32,13 +32,8 @@ func NewIndex(s Source, granularity int) *Index {
 
 // scan reads the source and builds the index.
 func (i *Index) scan() {
-	// We need a separate reader to not interfere with the main UI reader?
-	// Source is ReaderAt, so we are good if underlying File is thread-safe.
-	// We'll read sequentially from 0.
-
-	// Optimization: Use a bufio.Reader on top of a SectionReader or just ReadAt loop?
-	// Since we are scanning strictly sequentially, we can just use a large buffer and ReadAt.
-	// But ReadAt doesn't update an offset.
+	// Read sequentially from the source to build the index.
+	// We use a large buffer for efficiency.
 
 	offset := int64(0)
 	buf := make([]byte, 64*1024)
@@ -75,9 +70,7 @@ func (i *Index) addLine(offset int64) {
 }
 
 // Locate returns the byte offset for the start of the given line number.
-// If the line is not yet indexed, it returns the last known line's offset and false?
-// Actually, we should probably block or just best-effort scan if needed.
-// For now, simpler: resolve using the nearest checkpoint.
+// If the line is not yet indexed, it scans forward from the last known checkpoint.
 func (i *Index) Locate(line int) (int64, error) {
 	i.mu.RLock()
 	idx := line / i.granularity
@@ -107,8 +100,7 @@ func (i *Index) scanForward(
 	startOffset int64,
 	startLine, targetLine int,
 ) (int64, error) {
-	// TODO: This duplicates scan logic but for specific seek.
-	// Implementation simplified for brevity:
+	// TODO: Deduplicate scan logic by refactoring common reading code (see also scan()).
 
 	currentOffset := startOffset
 	currentLine := startLine

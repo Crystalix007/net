@@ -62,7 +62,7 @@ func (m Model) View() string {
 			// Replace tabs with spaces to prevent rendering glitches
 			safeLine := strings.ReplaceAll(lineStr, "\t", "    ")
 			s.WriteString(safeLine)
-			// Check safeLine or lineStr, safeLine works too
+
 			if !strings.HasSuffix(safeLine, "\n") {
 				s.WriteString("\n")
 			}
