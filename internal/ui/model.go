@@ -4,8 +4,8 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/Crystalix007/net/logflt/internal/filter"
-	"github.com/Crystalix007/net/logflt/internal/log"
+	"github.com/Crystalix007/net/internal/filter"
+	"github.com/Crystalix007/net/internal/log"
 )
 
 type Mode int

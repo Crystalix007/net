@@ -8,8 +8,8 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/Crystalix007/net/logflt/internal/log"
-	"github.com/Crystalix007/net/logflt/internal/ui"
+	"github.com/Crystalix007/net/internal/log"
+	"github.com/Crystalix007/net/internal/ui"
 )
 
 func main() {
