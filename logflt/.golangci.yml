@@ -15,11 +15,15 @@ linters:
     - unparam
     - nilerr
 
-linters-settings:
-  gofumpt:
-    extra-rules: true
-  goimports:
-    local-prefixes: logflt
+formatters:
+  enable:
+    - gofumpt
+    - goimports
+  settings:
+    gofumpt:
+      extra-rules: true
+    goimports:
+      local-prefixes: logflt
 
 issues:
   exclude-rules:
