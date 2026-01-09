@@ -8,10 +8,15 @@ import (
 )
 
 var (
-	styleStatus   = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).MarginTop(1)
-	styleSelected = lipgloss.NewStyle().Foreground(lipgloss.Color("229")).Background(lipgloss.Color("57"))
+	styleStatus = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("241")).
+			MarginTop(1)
+	styleSelected = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("229")).
+			Background(lipgloss.Color("57"))
 )
 
+// View renders the model to a string.
 func (m Model) View() string {
 	var s strings.Builder
 
@@ -57,7 +62,8 @@ func (m Model) View() string {
 			// Replace tabs with spaces to prevent rendering glitches
 			safeLine := strings.ReplaceAll(lineStr, "\t", "    ")
 			s.WriteString(safeLine)
-			if !strings.HasSuffix(safeLine, "\n") { // Check safeLine or lineStr, safeLine works too
+			// Check safeLine or lineStr, safeLine works too
+			if !strings.HasSuffix(safeLine, "\n") {
 				s.WriteString("\n")
 			}
 			displayed++
@@ -76,7 +82,8 @@ func (m Model) View() string {
 	s.WriteString(strings.Repeat("-", m.Width) + "\n")
 
 	// Filter List Overlay
-	if m.Mode == ModeFilterList {
+	switch m.Mode {
+	case ModeFilterList:
 		s.WriteString("Active Filters (j/k nav, x del, ret toggle):\n")
 		for i, f := range m.Filters.Filters {
 			cursor := " "
@@ -101,11 +108,16 @@ func (m Model) View() string {
 				s.WriteString(line + "\n")
 			}
 		}
-	} else if m.Mode == ModeInput {
+	case ModeInput:
 		s.WriteString(m.Input.View() + "\n")
-	} else {
+	default:
 		// Status Line
-		status := fmt.Sprintf("Line: %d | Filters: %d | %s", m.TopLine, len(m.Filters.Filters), m.Message)
+		status := fmt.Sprintf(
+			"Line: %d | Filters: %d | %s",
+			m.TopLine,
+			len(m.Filters.Filters),
+			m.Message,
+		)
 		if m.Follow {
 			status += " | FOLLOW"
 		}
@@ -129,7 +141,7 @@ func (m Model) readLineAt(offset int64) (string, int64, error) {
 		n, err := m.Source.ReadAt(buf, cur)
 		if n > 0 {
 			// Search for newline in this chunk
-			for i := 0; i < n; i++ {
+			for i := range n {
 				if buf[i] == '\n' {
 					// Found newline
 					line = append(line, buf[:i+1]...) // Include newline

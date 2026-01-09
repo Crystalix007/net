@@ -16,6 +16,7 @@ type Index struct {
 	source      Source
 }
 
+// NewIndex creates a new index for the given source.
 func NewIndex(s Source, granularity int) *Index {
 	if granularity <= 0 {
 		granularity = 1000
@@ -29,6 +30,7 @@ func NewIndex(s Source, granularity int) *Index {
 	return idx
 }
 
+// scan reads the source and builds the index.
 func (i *Index) scan() {
 	// We need a separate reader to not interfere with the main UI reader?
 	// Source is ReaderAt, so we are good if underlying File is thread-safe.
@@ -45,7 +47,7 @@ func (i *Index) scan() {
 		n, err := i.source.ReadAt(buf, offset)
 		if n > 0 {
 			// Scan buffer for newlines
-			for j := 0; j < n; j++ {
+			for j := range n {
 				if buf[j] == '\n' {
 					i.addLine(offset + int64(j) + 1)
 				}
@@ -101,7 +103,10 @@ func (i *Index) Locate(line int) (int64, error) {
 
 // scanForward scans from a known checkpoint to the target line.
 // This reads from the source synchronously.
-func (i *Index) scanForward(startOffset int64, startLine, targetLine int) (int64, error) {
+func (i *Index) scanForward(
+	startOffset int64,
+	startLine, targetLine int,
+) (int64, error) {
 	// TODO: This duplicates scan logic but for specific seek.
 	// Implementation simplified for brevity:
 
@@ -115,7 +120,7 @@ func (i *Index) scanForward(startOffset int64, startLine, targetLine int) (int64
 			return 0, err
 		}
 
-		for j := 0; j < n; j++ {
+		for j := range n {
 			if buf[j] == '\n' {
 				currentLine++
 				if currentLine == targetLine {
@@ -128,6 +133,7 @@ func (i *Index) scanForward(startOffset int64, startLine, targetLine int) (int64
 	return currentOffset, nil
 }
 
+// TotalLines returns the total number of lines discovered so far.
 func (i *Index) TotalLines() int {
 	i.mu.RLock()
 	defer i.mu.RUnlock()

@@ -17,6 +17,7 @@ type FileSource struct {
 	f *os.File
 }
 
+// NewFileSource opens a file for reading.
 func NewFileSource(path string) (*FileSource, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -25,10 +26,12 @@ func NewFileSource(path string) (*FileSource, error) {
 	return &FileSource{f: f}, nil
 }
 
+// ReadAt reads from the file.
 func (s *FileSource) ReadAt(p []byte, off int64) (n int, err error) {
 	return s.f.ReadAt(p, off)
 }
 
+// Size returns the size of the file.
 func (s *FileSource) Size() (int64, error) {
 	fi, err := s.f.Stat()
 	if err != nil {
@@ -37,6 +40,7 @@ func (s *FileSource) Size() (int64, error) {
 	return fi.Size(), nil
 }
 
+// Close closes the file.
 func (s *FileSource) Close() error {
 	return s.f.Close()
 }

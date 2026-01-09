@@ -1,9 +1,11 @@
+// Package filter provides regex-based filtering.
 package filter
 
 import (
 	"regexp"
 )
 
+// Filter represents a compiled regex filter.
 type Filter struct {
 	Regex    *regexp.Regexp
 	Inverted bool // If true, exclude matches
@@ -11,16 +13,19 @@ type Filter struct {
 	Raw      string // The original string
 }
 
+// Engine manages a list of filters.
 type Engine struct {
 	Filters []Filter
 }
 
+// NewEngine creates a fresh filter engine.
 func NewEngine() *Engine {
 	return &Engine{
 		Filters: make([]Filter, 0),
 	}
 }
 
+// Add compiles and adds a new filter pattern.
 func (e *Engine) Add(pattern string, inverted bool) error {
 	// Use simpler regex syntax if preferred, but Go regexp is standard.
 	// Case insensitive by default? '(?i)' prefix can be added if requested.
@@ -69,12 +74,14 @@ func (e *Engine) Match(line []byte) bool {
 	return true
 }
 
+// Remove deletes a filter at the given index.
 func (e *Engine) Remove(index int) {
 	if index >= 0 && index < len(e.Filters) {
 		e.Filters = append(e.Filters[:index], e.Filters[index+1:]...)
 	}
 }
 
+// Toggle enables or disables a filter at the given index.
 func (e *Engine) Toggle(index int) {
 	if index >= 0 && index < len(e.Filters) {
 		e.Filters[index].Enabled = !e.Filters[index].Enabled

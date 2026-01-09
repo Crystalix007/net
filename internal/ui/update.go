@@ -7,6 +7,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+// Update handles messages and updates the model.
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -19,9 +20,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				val := m.Input.Value()
 				if val != "" {
 					inverted := false
-					if strings.HasPrefix(val, "!") { // Use strings.HasPrefix
+					if strings.HasPrefix(val, "!") {
 						inverted = true
-						val = strings.TrimPrefix(val, "!") // Use strings.TrimPrefix
+						val = strings.TrimPrefix(val, "!")
 					}
 					err := m.Filters.Add(val, inverted)
 					if err != nil {
@@ -55,7 +56,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.Filters.Toggle(m.ActiveIndex)
 			case "x", "backspace":
 				m.Filters.Remove(m.ActiveIndex)
-				if m.ActiveIndex >= len(m.Filters.Filters) && m.ActiveIndex > 0 {
+				if m.ActiveIndex >= len(m.Filters.Filters) &&
+					m.ActiveIndex > 0 {
 					m.ActiveIndex--
 				}
 			}

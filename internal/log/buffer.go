@@ -1,3 +1,4 @@
+// Package log provides log file reading and buffering.
 package log
 
 import (
@@ -30,6 +31,7 @@ func NewStreamSource(r io.Reader) (*StreamSource, error) {
 	return s, nil
 }
 
+// consume reads from the reader and writes to the temp file.
 func (s *StreamSource) consume(r io.Reader) {
 	defer close(s.done)
 	// We append to the temp file.
@@ -57,10 +59,12 @@ func (s *StreamSource) consume(r io.Reader) {
 	}
 }
 
+// ReadAt reads from the temporary file.
 func (s *StreamSource) ReadAt(p []byte, off int64) (n int, err error) {
 	return s.tempFile.ReadAt(p, off)
 }
 
+// Size returns the current size of the temporary file.
 func (s *StreamSource) Size() (int64, error) {
 	fi, err := s.tempFile.Stat()
 	if err != nil {
@@ -69,8 +73,15 @@ func (s *StreamSource) Size() (int64, error) {
 	return fi.Size(), nil
 }
 
+// Close closes the temporary file and removes it.
 func (s *StreamSource) Close() error {
 	name := s.tempFile.Name()
+
+	// We ignore the error from Close here because we are about to remove the file anyway,
+	// and we want to ensure removal happens.
+	//
+	//nolint:errcheck
 	s.tempFile.Close()
+
 	return os.Remove(name)
 }

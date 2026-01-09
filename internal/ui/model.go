@@ -1,3 +1,4 @@
+// Package ui provides the Bubble Tea model and view.
 package ui
 
 import (
@@ -8,14 +9,19 @@ import (
 	"github.com/Crystalix007/net/internal/log"
 )
 
+// Mode represents the current interaction mode.
 type Mode int
 
 const (
+	// ModeView is the default viewing mode.
 	ModeView Mode = iota
+	// ModeInput is the filter input mode.
 	ModeInput
+	// ModeFilterList is the filter list navigation mode.
 	ModeFilterList
 )
 
+// Model is the main application model.
 type Model struct {
 	Source  log.Source
 	Index   *log.Index
@@ -37,6 +43,7 @@ type Model struct {
 	Message string
 }
 
+// NewModel creates a new Model with the given source.
 func NewModel(src log.Source) Model {
 	idx := log.NewIndex(src, 1000)
 	ti := textinput.New()
@@ -52,6 +59,7 @@ func NewModel(src log.Source) Model {
 	}
 }
 
+// Init initializes the model.
 func (m Model) Init() tea.Cmd {
 	return textinput.Blink
 }

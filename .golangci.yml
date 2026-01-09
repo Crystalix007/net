@@ -26,8 +26,8 @@ formatters:
     goimports:
       local-prefixes: github.com/Crystalix007/net
     golines:
-      max-len: 8
-      tab-len: 2
+      max-len: 80
+      tab-len: 4
 
 issues:
   exclude-rules:

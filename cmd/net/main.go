@@ -1,3 +1,4 @@
+// Package main is the entry point for the net tool.
 package main
 
 import (
@@ -43,8 +44,9 @@ func run(path string) {
 				fmt.Printf("Error opening file: %v\n", errP)
 				os.Exit(1)
 			}
-			defer f.Close() // This closes the underlying file handle after we potentially read it all?
-			// Wait, StreamSource needs to read from it async. We can't close it here immediately if we pass the Reader.
+			defer f.Close() //nolint:errcheck
+			// The FileSource (or StreamSource's underlying reader) needs it open.
+			// However `log.NewStreamSource` consumes it in a goroutine.
 			// Actually NewStreamSource consumes it in a goroutine.
 			// But if we close 'f' here, the goroutine might fail reading.
 			// Pass 'f' responsibility?
@@ -57,7 +59,8 @@ func run(path string) {
 				fmt.Printf("Error creating gzip reader: %v\n", errG)
 				os.Exit(1)
 			}
-			defer gz.Close()
+
+			defer gz.Close() //nolint:errcheck
 
 			// We can't use defer f.Close() if the goroutine depends on it?
 			// Correct. The goroutine needs to read from gz, which reads from f.
@@ -77,7 +80,8 @@ func run(path string) {
 		fmt.Printf("Error initializing source: %v\n", err)
 		os.Exit(1)
 	}
-	defer src.Close()
+
+	defer src.Close() //nolint:errcheck
 
 	model := ui.NewModel(src)
 	p := tea.NewProgram(model, tea.WithAltScreen())
