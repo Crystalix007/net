@@ -15,7 +15,7 @@ type StreamSource struct {
 
 // NewStreamSource starts reading from r into a temporary file in a separate goroutine.
 func NewStreamSource(r io.Reader) (*StreamSource, error) {
-	f, err := os.CreateTemp("", "logflt-*")
+	f, err := os.CreateTemp("", "net-*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp file: %w", err)
 	}

@@ -20,7 +20,7 @@ func main() {
 			// Stdin is piped
 			run("-")
 		} else {
-			fmt.Println("Usage: logflt <filename> or pipe data to stdin")
+			fmt.Println("Usage: net <filename> or pipe data to stdin")
 			os.Exit(1)
 		}
 	} else {
@@ -95,10 +95,10 @@ func run(path string) {
 
 func printResumeCommand(path string, m ui.Model) {
 	// Construct command
-	// logflt <path>
+	// net <path>
 	// But where do we put filters?
 	// We didn't implement CLI flag parsing for filters yet in main.go!
-	// The implementation plan said "Print the command to resume... logflt --filter=..."
+	// The implementation plan said "Print the command to resume... net --filter=..."
 	// But we haven't implemented flag parsing.
 	// We should probably print it anyway as a "Proposed" command, even if flags aren't hooked up yet.
 	// Or better, just list the filtering parameters comfortably.
@@ -119,7 +119,7 @@ func printResumeCommand(path string, m ui.Model) {
 		}
 
 		// Generated CLI command suggestion (Future proof)
-		fmt.Print("Command: logflt")
+		fmt.Print("Command: net")
 		for _, f := range m.Filters.Filters {
 			if f.Enabled {
 				inv := ""
