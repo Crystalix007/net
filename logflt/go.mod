@@ -1,4 +1,4 @@
-module logflt
+module github.com/Crystalix007/net/logflt
 
 go 1.25.1
 

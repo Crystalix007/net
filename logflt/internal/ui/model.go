@@ -1,11 +1,11 @@
 package ui
 
 import (
-	"logflt/internal/filter"
-	"logflt/internal/log"
-
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+
+	"github.com/Crystalix007/net/logflt/internal/filter"
+	"github.com/Crystalix007/net/logflt/internal/log"
 )
 
 type Mode int

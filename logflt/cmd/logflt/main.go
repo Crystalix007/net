@@ -6,10 +6,10 @@ import (
 	"os"
 	"strings"
 
-	"logflt/internal/log"
-	"logflt/internal/ui"
-
 	tea "github.com/charmbracelet/bubbletea"
+
+	"github.com/Crystalix007/net/logflt/internal/log"
+	"github.com/Crystalix007/net/logflt/internal/ui"
 )
 
 func main() {

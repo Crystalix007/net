@@ -24,7 +24,7 @@ formatters:
     gofumpt:
       extra-rules: true
     goimports:
-      local-prefixes: logflt
+      local-prefixes: github.com/Crystalix007/net/logflt
     golines:
       max-len: 8
       tab-len: 2
