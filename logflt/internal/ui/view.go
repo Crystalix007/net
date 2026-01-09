@@ -8,9 +8,8 @@ import (
 )
 
 var (
-	styleStatus     = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).MarginTop(1)
-	styleFilterMode = lipgloss.NewStyle().Foreground(lipgloss.Color("63")) // Purple-ish
-	styleSelected   = lipgloss.NewStyle().Foreground(lipgloss.Color("229")).Background(lipgloss.Color("57"))
+	styleStatus   = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).MarginTop(1)
+	styleSelected = lipgloss.NewStyle().Foreground(lipgloss.Color("229")).Background(lipgloss.Color("57"))
 )
 
 func (m Model) View() string {

@@ -10,7 +10,6 @@ import (
 // to allow random access (ReaderAt).
 type StreamSource struct {
 	tempFile *os.File
-	written  int64
 	done     chan error
 }
 
